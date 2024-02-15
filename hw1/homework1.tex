@@ -27,7 +27,7 @@
 
 % Solution environment
 \newenvironment{solution}
-  {\color{blue}\section*{Solution}}
+  {\color{magenta}\section*{Solution}}
 {}
 
 \definecolor{verbgray}{gray}{0.9}
@@ -73,6 +73,8 @@ Antarctic Climate Variability over the Past 800,000 Years.
 \emph{Science, 317}(5839), 793–796. doi:10.1126/science.1141038}.
  
 The following is a snippet of the data file:
+
+% $$ \Delta w_{ij}^{(t)} = \alpha x_j^{(t)} y_i^{(t)} $$
  
 \begin{csv}
 # Age, Temperature
@@ -131,6 +133,9 @@ haven't received an invitation, contact the course staff through Ed.
 named in the same way as we provide them in the repository,
 e.g. \texttt{hw1.pdf}, etc.
 
+\bigskip
+
+\noindent \textcolor{magenta}{Name: Kelsey Chen \\ Collaborators: Salma Douieb \\ Late days used: 0}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Problem 1
@@ -169,7 +174,13 @@ regressions, we will interrogate the set-up of our problem.
 
 % qwer
 \begin{solution}
-	Your solution here.
+\begin{enumerate}
+    \item From the abstract, we know that ice cores were drilled and extracted from Dome C in Antarctica. The deuterium content in the ice core was measured and used as a proxy for past temperatures. In terms of data corrections, the abstract states that the temperature needed to be corrected for sea-water isotopic composition and ice sheet elevation on the EDC3 age scale. The temperature in the temperature column corresponds to the temperature estimate for the temperature difference of the samples from the average of the last 1000 years. 
+    
+    \item It would not be reasonable to use this pattern as evidence that the earth will cool down again, since the samples are only drawn from a specific region (Dome C in Antarctica). Unless there are other studies that show correlation between temperatures from this region to the earth's temperature as a whole, the data from this dataset cannot be generalized to the earth. 
+    
+    \item Even though the data is only from one region of the earth, interpolating temperatures for years not provided in the training set can still be useful for climate change research. For example, the data could be used in conjunction with other data sets to reconstruct historical climate conditions, which in turn could contribute to our understanding of climate change patterns and trends. Furthermore, if we are missing temperature data from years that are covered by this data set, you can use this data to interpolate those values.
+\end{enumerate}
 \end{solution}
 % rewq
 
@@ -227,7 +238,35 @@ Include your plot in your solution PDF.
 
 % qwer
 \begin{solution}
-	Your solution here.
+\begin{enumerate}
+    \item The curve gets smoother as $\tau$ increases. For $\tau$ = 50, the curve seems to be still fairly accurate while being smooth, but for $\tau$ = 2500, the curve is incredibly smooth with larger MSE. This makes sense because with tau very large, the model gives too much weight to points that are far from the prediction x-value, hence leading to inaccurate predictions. For $\tau$ = 1, the curve goes through all the data points in the training dataset. While this fits the training data incredibly well, it may lead to higher loss due to the model fitting too closely to the data points and failing to generalize to new data points. 
+    
+    \item \begin{equation*}
+    \begin{split}
+        \text{MSE} = \frac{1}{M}\sum_M\left[y_m - f(x_m; w)\right]^2 \text{ from lecture} \\
+        = \frac{1}{M} \sum_M\left[y_m - \frac{\sum_n K_\tau(x_n, x_m)y_n}{\sum_n K_\tau (x_n, x_m)}\right]^2 \text{ by replacing } f(x_m; w)
+    \end{split}
+    \end{equation*}
+
+    \item The value of $\tau$ that would minimize the loss would be very small, since it would give essentially 0 weight to all the other points other than the training data point, i.e. $\tau$ would be set to 0. However, this would make the kernel function undefined, since if $x=x'$, then the kernel function becomes exp(0/0). If $\mathcal{D}_\texttt{test} = \mathcal{D}_\texttt{train}$, there will be at least one point for which $x=x'$ in the sum of the weights, and hence $f(x^*)$ is poorly defined for every test value. With $x \neq x'$ and $\tau$ small, the expression inside exp() is very negative, so $K_t(x,x^*)$ is close to 0 but not undefined. This makes sense because we are giving less weight to points that are further from the prediction x-value. Hence, it's bad to set $\mathcal{D}_\texttt{test} = \mathcal{D}_\texttt{train}$ since the model will overfit to exactly the training data and will only be able to replicate the training data without providing generalized information on new data. 
+
+    \item 
+
+    Results:
+    \begin{enumerate}
+        \item $\tau$ = 1: loss = 1.9472621565209178
+        \item $\tau$ = 50: loss = 1.8582899169613447
+        \item $\tau$ = 2500: loss = 8.333886806980791
+    \end{enumerate}
+    
+    $\tau$ = 50 yields the lowest MSE of the three options ($\tau$ = 1, $\tau$ = 50, $\tau$ = 2500).
+
+    \item Our time complexity is $O(N)$ since for each of the $n$ x-values $x$ in the training set, we need to compute the similarity between $x$ and the new point $x'$ using our kernel function. Hence computing these similarities is $O(N)$ in total. Then we calculate $f_{\tau}(x^*)$, for each of the $n$ x-values in the training set, which is again $O(N)$. Hence in total our time for making a single prediction is $O(N)$, so the number of computations required to make a prediction is linear with the size of the training set. 
+
+    For space complexity, we will need to store $N$ pairs of training data, as well as $N$ weights for each prediction. Hence the space complexity is $O(N)$. 
+    
+\end{enumerate}
+
 \end{solution}
 % rewq
 
@@ -276,7 +315,20 @@ nearest-neighbors.  Recall that kNN uses a predictor of the form
 
 % qwer
 \begin{solution}
-	Your solution here.
+\begin{enumerate}
+    \item The behavior of the plots for KNN (varying k) are quite similar to those for KR (varying tau). In particular, k=1 looks similar to $\tau=1$, fitting very closely to the training data (but perhaps not well to the test data because of overfitting, as we saw in the previous question). Similarly, k=3 looks similar to $\tau = 50$, but fitting less closely to the training data. This makes sense since KNN only considers a fixed number of nearest neighbors without weighing the distances differently. Finally, k=$N-1$ is practically a horizontal line, since it's simply the average of all the data points except for the furthest one. It makes sense that the behavior varying k is similar to the behavior varying $\tau$ because both KNN and KR are locally adaptive, so we can control which points the model uses for its predictions using $k$ and $\tau$ respectively.
+
+    \item Results: 
+    \begin{enumerate}
+        \item k = 1: MSE loss = 1.7406000000000004
+        \item k = 3: MSE loss = 3.890766222222223
+        \item k = 55: MSE loss = 9.66397324033058
+        \item k = 56: MSE loss = 9.528571442602042
+    \end{enumerate}
+    The value of $k$ with the lowest MSE is $k=1$. 
+
+    \item For a new data point, we get the distances from each $N$ training point, which is $O(N)$. We then sort the neighbors in ascending order to get the $k$ closest points, which is $O(N \log N)$. Summing each row for a single point is $O(N)$, so we have that the overall time complexity is $O(N \log N)$. 
+\end{enumerate}
 \end{solution}
 % rewq
 
@@ -374,7 +426,29 @@ MSE can no longer be directly compared.
 
 % qwer
 \begin{solution}
-	Your solution here.
+\begin{enumerate}
+    \item \begin{center}
+        \includegraphics[scale=0.45]{4.1.png}
+    \end{center}
+
+    \item Results:
+    \begin{enumerate}
+        \item Train MSE: 4.82; Test MSE: 7.96 
+        \item Train MSE: 5.53; Test MSE: 8.71
+        \item Train MSE: 2.88; Test MSE: 5.97
+        \item Train MSE: 0.65; Test MSE: 60.32
+    \end{enumerate}
+    We can see from the training and testing MSEs that basis (d) seems to overfit, since the training MSE is much lower while the test MSE is much higher than the others. Relative to (c), basis (a) and (b) underfit. 
+
+    \item A basis function allows us to extend linear regression to fit higher order functions. For instance, temperature data will vary by time, and will likely follow a sin or cos curve since it follows a yearly cycle. Hence transforming our data with sin or cos allows us to still use linear regression on our data. 
+    
+    On the other hand, the function $f$ can be used to scale our inputs so that they are easier to work with. For instance, if our input range is very large, we can divide the entire input vector by $1.81 * 10^2$ for numerical stability. 
+    
+    \item What is stored to compute predictions is just $O(d)$ space where $d$ is the dimension of our data, since we only need to store the weight for each dimension. To compute the prediction for a new input, we can simply perform a calculation with the stored weights of the dimensions, which is $O(d)$ time. The computation needed to compute the prediction thus doesn't depend on the size of the training set $N$, merely the dimension of the data. 
+
+    \item KNN and KR are similar in that they are both locality adaptive (can adjust how global/local the points are) and geometry adaptive (can adjust the way we compare points). KR is like a more generalized version of KNN, using a kernel function instead of distance to adjust for locality and geometry. As we saw in lecture, we can compare the performance of KNN and KR by looking at a sparsely sampled highly changing function (like the sin or cos wave). Both perform poorly as we increase the locality, but KR outperforms KNN as the kernel gives more weight to nearest neighbors. For linear regression, some basis functions will overfit or underfit, as we saw in the example in the previous parts. Furthermore, another limitation of linear regression is that we can only represent linear data without basis functions, so if we don't have some prior intuition of what basis function to use, it may be harder to make a prediction with linear regression. 
+    
+\end{enumerate}
 \end{solution}
 % rewq
 
@@ -431,7 +505,38 @@ $y$ are scalars, $w$ is also a scalar.
 \end{problem}
 
 \begin{solution}
-	Your solution here.
+\begin{enumerate}
+    \item We want to minimize $E_{x,y} [(y - \hat{y})^2] = \argmin_w E_{x,y} [(y - wx)^2]$. We have that: 
+
+    \begin{equation*}
+    \begin{split}
+    E_{x,y} [(y - wx)^2] = E_{x,y} [y^2 - 2ywx + (wx)^2] = E_{x,y} [y^2] - 2E_{x,y}[ywx] + E_{x,y}[(wx)^2] \text{ by linearity} \\
+    = E_{x,y} [y^2] - 2wE_{x,y}[yx] + w^2E_{x,y}[x^2] \text{ since w is constant w.r.t. }E_{x,y} 
+    \end{split}
+    \end{equation*}
+    To find the optimal $w$ we set the derivative of the expression above to be equal to 0: 
+    \begin{equation*}
+        \begin{split}
+            0 = \frac{d}{dw}E_{x,y} [y^2] - \frac{d}{dw}2wE_{x,y}[yx] + \frac{d}{dw} w^2E_{x,y}[x^2] \\
+            = 0 - 2E_{x,y}[yx] + 2wE_{x,y}[x^2] \\ 
+            \Rightarrow w^* = \frac{E_{x,y}[yx]}{E_{x,y}[x^2]}
+        \end{split}
+    \end{equation*}
+    
+    \item We want our estimator $\hat{w}^*$ for $w^*$ to be consistent ($\hat{w}^* \rightarrow w^*$ in probability) and unbiased ($E[\hat{w}^*] - w^* = 0$). By law of large numbers, the sample mean converges to the theoretical mean with probability 1, so we can use the sample means as consistent estimators: $\hat{E}_{x,y}[yx] = \frac{1}{N}\sum_{i=1}^Ny_ix_i$ and $\hat{E}_{x,y}[x^2] = \frac{1}{N}\sum_{i=1}^Nx_i^2$. Now to show that the sample mean is unbiased, we can use linearity of expectation and the assumption that the data points are independent:  
+    \begin{equation*}
+    \begin{split}
+        E\left[\frac{1}{N}\sum_{i=1}^Ny_ix_i
+        \right] = \frac{1}{N} \\
+        E\left[\sum_{i=1}^Ny_ix_i\right] = \frac{1}{N}N E\left[yx\right]
+    \end{split}
+    \end{equation*}
+    Hence we have that the sample mean is unbiased for the term in the numerator, and by similar logic we can show the same for the term in the denominator, so our unbiased and consistent estimator is $$\hat{w}^* = \frac{\sum_{i=1}^Ny_ix_i}{\sum_{i=1}^Nx_i^2}$$
+    
+    \item From the textbook, we have that the optimal $w^* = (X^TX)^{-1}X^Ty$. This is analogous to the estimator from part 2, except we use matrices instead of scalar values. In particular, $(X^TX)^{-1}$ corresponds to the denominator, $\sum_{i=1}^Nx_i^2$, and the term $X^Ty$ corresponds to the numerator, $\sum_{i=1}^Ny_ix_i$. 
+    
+    \item We did not rely on the data being jointly gaussian, since our calculation of the expectation holds for all random variables, and we do not use any properties of the Normal. Hence our derivations should hold for all random variables. 
+\end{enumerate}
 \end{solution}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -25,7 +25,7 @@
 \usepackage[shortlabels]{enumitem}
 \usepackage{hyperref}
 \usepackage{etoolbox}
-\usepackage{color}
+\usepackage{color, soul}
 
 \theoremstyle{definition}
 \newtheorem{defn}{Definition}[section]
@@ -84,6 +84,8 @@
     \item Please submit your \textbf{\LaTeX\ file and code files (i.e., anything ending in \texttt{.py}, \texttt{.ipynb}, or \texttt{.tex}) to the Gradescope assignment `HW0 - Supplemental'}. 
 \end{enumerate}
 
+\noindent \textcolor{blue}{Name: Kelsey Chen \\ Collaborators: Inaki Arango, Prin Pulkes \\ Late days used: 0}
+
 \newpage
 \begin{problem}[Modeling Linear Trends - Linear Algebra Review]
 In this class we will be exploring the question of ``how do we model the trend in a dataset" under different guises. In this problem, we will explore the algebra of modeling a linear trend in data. We call the process of finding a model that capture the trend in the data, ``fitting the model."\\
@@ -107,7 +109,46 @@ In this class we will be exploring the question of ``how do we model the trend i
 
 
 \begin{solution}
-	Your solution here.
+\begin{enumerate}
+    \item 
+        \begin{equation*}
+        \begin{split}
+            \begin{cases}
+                y_1 = w_0 + w_1x_1 \\
+                y_2 = w_0 + w_1x_2
+            \end{cases}
+        \end{split}
+        \end{equation*}
+        From the second equation we have $ w_0 = y_2 - w_1x_2$, and substituting into the first equation gives $y_1 = y_2 -w_1x_2 + w_1x_1$. Solving for $w_1:$
+        \begin{equation*}
+            w_1x_1 - w_1x_2 = y_1-y_2 \Rightarrow w_1 = \boxed{\frac{y_1 - y_2}{x_1-x_2}}
+        \end{equation*}
+        Plugging into the equation $ w_0 = y_2 - w_1x_2$ gives $w_0 = y_2 - \frac{y_1 - y_2}{x_1-x_2}x_2 = \boxed{\frac{x_1y_2-x_2y_1}{x_1-x_2}}$. 
+    \item From the system of equations in 1) we have
+        \begin{equation*}
+            \mathbf{y} = \begin{bmatrix} y_1 \\ y_2 \end{bmatrix} = \begin{bmatrix} 1 \\ 1 \end{bmatrix}w_0 + \begin{bmatrix} x_1 \\ x_2 \end{bmatrix}w_1 = \begin{bmatrix} 1 & x_1 \\ 1 & x_2 \end{bmatrix}\begin{bmatrix} w_0 \\ w_1 \end{bmatrix} = \mathbf{X}\mathbf{w}
+        \end{equation*}
+        Hence we have $\mathbf{X} = \begin{bmatrix} 1 & x_1 \\ 1 & x_2 \end{bmatrix}$, $\mathbf{w} = \begin{bmatrix} w_0 \\ w_1 \end{bmatrix}$, and $\mathbf{y} = \begin{bmatrix} y_1 \\ y_2 \end{bmatrix}$. 
+        
+    \item A solution exists if \textbf{X} is invertible, and solutions are unique if the rank of \textbf{X} equals 2. In particular for this data, we have that \begin{equation*}
+        \textbf{X}^{-1} = \frac{1}{x_2-x_1}\begin{bmatrix} x_2 & -x_1 \\ -1 & 1 \end{bmatrix}
+    \end{equation*} so we need to have $x_1 \neq x_2$. To find the analytical form, we left multiply both sides of the equation by $X^{-1}$. 
+    
+    \begin{equation*}
+        \textbf{y} = \textbf{Xw} \implies \mathbf{X^{-1}y} = \mathbf{X^{-1}Xw} \implies \mathbf{X^{-1}y} = \textbf{w}
+    \end{equation*}
+    
+    So, the analytical form of \textbf{w} is \textbf{w} = $\mathbf{X}^{-1}$\textbf{y}.
+    \item \begin{equation*}
+        \mathbf{w} = \mathbf{X}^{-1}\mathbf{y} 
+        = \frac{1}{x_2-x_1}\begin{bmatrix} x_2 & -x_1 \\ -1 & 1 \end{bmatrix} \begin{bmatrix} y_1 \\ y_2 \end{bmatrix} 
+        = \begin{bmatrix} \frac{x_2}{x_2-x_1} & \frac{-x_1}{x_2-x_1} \\ \frac{-1}{x_2-x_1} & \frac{1}{x_2-x_1} \end{bmatrix} \begin{bmatrix} y_1 \\ y_2 \end{bmatrix} 
+        = \begin{bmatrix} \frac{x_2y_1-x_1y_2}{x_2-x_1} \\ \frac{y_2-y_1}{x_2-x_1}\end{bmatrix} 
+        = \begin{bmatrix} \frac{x_1y_2-x_2y_1}{x_1-x_2} \\ \frac{y_1-y_2}{x_1-x_2}\end{bmatrix} 
+    \end{equation*}
+    The final answers in 1 and 3 match. One advantage of phrasing the problem in matrix notation is that it is more succinct to solve than substitution when many variables are involved. Furthermore, we can tell if there is a unique solution by properties of \textbf{X}. 
+    \item No, \textbf{X} is not invertible if there are more than 2 points, since it is not square. Hence the expression does not apply. 
+\end{enumerate}
 \end{solution}
 
 \color{black}
@@ -144,7 +185,19 @@ $$y = f(x_1, x_2) = \exp\left(-(x_1 - 2)^2 - (x_2 - 1)^2 \right)$$
 
 
 \begin{solution}
-	Your solution here.
+\begin{enumerate}
+    \item Plotting the function gives \begin{center}
+        \includegraphics[scale=0.45]{2.1.png}
+    \end{center}. The graph is parabola that is concave down, so we have that there is a unique solution that yields a maximum height.  
+    \item We have that \begin{equation*}
+        \frac{dy}{dx} = -6x + 72 \text{ and } \frac{d^2y}{dx^2} = -6
+    \end{equation*}
+    Our slope is 0 at the maximum, so setting $\frac{dy}{dx} = -6x + 72 = 0$ and solving for x gives our solution, $x=12$. Since $\frac{d^2y}{dx^2} < 0$ everywhere, we have that the graph is concave down everywhere, and thus by the second derivative test $x=12$ is a global maximum. If we plug x=12 into the equation for $y$, we have that Nari's plant will grow to a maximum height of $-3(12)^2 + 72*12 + 70 = 502$mm. 
+    \item Plotting the function, we can see that it is concave down on $(x_1,x_2) \in (0,6) \times (0,6)$, and that there is one maximum (the yellow area on the surface graph). 
+    \begin{center}
+        \includegraphics[scale=0.45]{2.3.png}
+    \end{center}.
+\end{enumerate}
 \end{solution}
 
 
@@ -183,7 +236,44 @@ For this problem, you may find the \texttt{multivariate\_normal} module from \te
 \newpage
 
 \begin{solution}
-	Your solution here.
+\begin{enumerate}
+    \item \begin{enumerate}
+        \item Plot with 500 samples and 20 bins: \begin{center}
+        \includegraphics[scale=0.7]{3.1.png}
+    \end{center}.
+
+    \item By visual inspection of the graph above, the empirical most likely combination of size and weight is approximately S=120 and W=4, which is basically equal to $\boldsymbol{\mu}$, the theoretical expected size and expected weight of the package. Repeating this procedure yields empirical values close to the theoretical values. 
+    \end{enumerate}
+    \item PDF plots: \begin{center}
+        \includegraphics[scale=0.45]{3.2.png}
+    \end{center} From the plots we know that the correlation between S and W is positive, since increasing S increases W (shifting the plot to the right).  
+    \item One reason why the Gaussian may be an appropriate model is that according to the Central Limit Theorem, the distribution of the sample mean (a sum of i.i.d. random variables) is approximately normal. The sample mean would be a reasonable estimator for the actual mean of the packages. 
+
+    One reason why the Gaussian may not be an appropriate model is that the data may be bimodal (e.g. small and large packages) or multimodal (e.g. small, medium, and large packages). In these cases, there would be multiple peaks, and hence a multimodal model would be more appropriate. 
+    \item We have that T = 60 + 0.6W + 0.2S + $\epsilon$. Hence: 
+    \begin{equation*}
+        \begin{split}
+            E[T] = E[60 + 0.6W + 0.2S + \epsilon] = 60 + 0.6E[W] + 0.2E[S] + E[\epsilon] \text{ by linearity} \\
+            = 60 + 0.6(4) + 0.2(120) + 0 = \boxed{86.4}
+        \end{split}
+    \end{equation*}
+    Furthermore, 
+    \begin{equation*}
+        \begin{split}
+            Var(T) = Var(60 + 0.6W + 0.2S + \epsilon) = Var(0.6W) + Var(0.2S) + 2Cov(0.6W, 0.2S) + Var(\epsilon) \\ \text{ since } \epsilon \text{ is independent of W, S and 60 is a constant} 
+            \\ = 0.36Var(W) + 0.04Var(S) + 2(0.6)(0.2)Cov(W,S) + Var(\epsilon) 
+            \\ = 0.36(\sqrt{1.5}) + 0.04(\sqrt{1.5}) + 2(0.6)(0.2)(1) + 5 \approx \boxed{5.84}
+        \end{split}
+    \end{equation*}
+    \item 
+    a) \begin{center}
+        \includegraphics[scale=0.45]{3.5.png}
+    \end{center}
+
+    b) \begin{center}
+        \includegraphics[scale=0.55]{3.5b.png}
+    \end{center}
+\end{enumerate}
 \end{solution} 
 
 
